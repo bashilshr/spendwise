@@ -1,29 +1,61 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+import 'core/theme/app_themes.dart';
+import 'core/theme/theme_provider.dart';
+
+void main() {
   runApp(const ProviderScope(child: SpendWiseApp()));
 }
 
-class SpendWiseApp extends StatelessWidget {
+class SpendWiseApp extends ConsumerWidget {
   const SpendWiseApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final themeMode = ref.watch(themeProvider);
+
     return MaterialApp(
       title: 'SpendWise',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        useMaterial3: true,
-        colorSchemeSeed: Colors.indigo,
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: themeMode,
+      home: const ThemeTestScreen(),
+    );
+  }
+}
+
+class ThemeTestScreen extends ConsumerWidget {
+  const ThemeTestScreen({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final themeMode = ref.watch(themeProvider);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('SpendWise'),
+        actions: [
+          IconButton(
+            icon: Icon(
+              themeMode == ThemeMode.dark
+                  ? Icons.light_mode
+                  : Icons.dark_mode,
+            ),
+            onPressed: () {
+              ref.read(themeProvider.notifier).state =
+                  themeMode == ThemeMode.dark
+                      ? ThemeMode.light
+                      : ThemeMode.dark;
+            },
+          )
+        ],
       ),
-      home: const Scaffold(
-        body: Center(
-          child: Text(
-            'SpendWise',
-            style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-          ),
+      body: const Center(
+        child: Text(
+          'Welcome to SpendWise🌱',
+          style: TextStyle(fontSize: 18),
         ),
       ),
     );
